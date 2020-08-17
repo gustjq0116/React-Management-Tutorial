@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import CustomerAdd from './components/CustomerAdd';
 import Customer from './components/Customer';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -26,16 +27,32 @@ const styles = theme =>({
 
 class App extends React.Component 
 {
-  state = {
-    customers: "",
-    complated: 0
+  constructor(props)
+  {
+    super(props);
+    this.state =
+    {
+      customers: "",
+      complated: 0
+    }
+  }
+
+  stateRefresh = () =>
+  {
+    this.setState({
+      customers: '',
+      complated: 0
+    });
+    this.callApi()
+      .then(res => this.setState({customers:res}))
+      .catch(err => console.log(err));
   }
 
   componentDidMount()
   {
     this.timer = setInterval(this.progress, 20);
     this.callApi()
-      .then(res => this.setState({customers:res}))
+      .then(res => {this.setState({customers:res}); })
       .catch(err => console.log(err));
   }
 
@@ -43,6 +60,7 @@ class App extends React.Component
   {
     const response = await fetch('/api/customers');
     const body = await response.json();
+
     return body;
   }
 
@@ -56,6 +74,7 @@ class App extends React.Component
 
     const { classes } = this.props;
     return (
+      <div>
         <Paper className={classes.root}>
           <Table className={classes.table}>
             <TableHead>
@@ -69,8 +88,9 @@ class App extends React.Component
               </TableRow>
             </TableHead>
             <TableBody>
-            {this.state.customers ? this.state.customers.map(c => {
-            return (
+            {this.state.customers ? this.state.customers.map(c => 
+            {
+            return ( 
               <Customer
                 key={c.id}
                 id={c.id}
@@ -89,9 +109,9 @@ class App extends React.Component
           </TableRow>}
             </TableBody>
           </Table>
-          
         </Paper>
-      
+        <CustomerAdd stateRefresh={this.stateRefresh}></CustomerAdd>
+      </div>
     );
   }
 }
