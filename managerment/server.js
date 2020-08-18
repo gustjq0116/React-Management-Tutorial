@@ -26,12 +26,26 @@ const upload = multer({dest: './upload'});
 
 app.use('/image', express.static('./upload'));
 
+app.delete('/api/customers/:id', (req, res) => 
+{
+    let params=req.params.id;
+    conn.query(
+        "UPDATE customer SET isdeleted=1 WHERE id=?", params, 
+        (err, rows, fields) => 
+        {
+            res.send(rows);
+        }
+    )
+   // res.send("123aaaaaaaaaaaaaaaaaaaa");
+})
+
 app.post('/api/customers', upload.single('image'), (req, res) => 
 {
-    let sql = 'INSERT INTO customer VALUES (null, ?, null, ?, ?, ?, ?)';
+    let sql = 'INSERT INTO customer VALUES (null, ?, null, ?, ?, ?, ?, now(), 0)';
     
     let image='';
-    req.file ?  image = '/image/' + req.file.filename : ''
+    if(image) image = req.file.filename;
+    //req.file ?  image = '/image/' + req.file.filename : ''
    // console.log(image);
     let name =req.body.name;
     let birthday =req.body.birthday;
@@ -53,9 +67,10 @@ app.post('/api/customers', upload.single('image'), (req, res) =>
 app.get('/api/customers', (req, res) => 
 {
     conn.query(
-        "SELECT * FROM customer",
+        "SELECT * FROM customer WHERE isdeleted=0",
         (err, rows, fields) => 
         {
+            console.log("get");
             res.send(rows);
         }
     )

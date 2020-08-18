@@ -29,7 +29,9 @@ class App extends React.Component
 {
   constructor(props)
   {
+    //console.log("constructor");
     super(props);
+
     this.state =
     {
       customers: "",
@@ -39,6 +41,8 @@ class App extends React.Component
 
   stateRefresh = () =>
   {
+    //console.log("stateRefresh");
+    this.timer = setInterval(this.progress, 20);
     this.setState({
       customers: '',
       complated: 0
@@ -50,14 +54,23 @@ class App extends React.Component
 
   componentDidMount()
   {
+    //{this.state.customers ? this.timer = setInterval(this.progress, 20):clearInterval(this.timer)}
     this.timer = setInterval(this.progress, 20);
+   
+    //console.log(this.state.customers);
     this.callApi()
       .then(res => {this.setState({customers:res}); })
       .catch(err => console.log(err));
   }
+  componentWillUnmount()
+  {
+    //console.log("componentWillUnmount");
+    clearInterval(this.timer);
+  }
 
   callApi = async () =>
   {
+    //console.log("callApi");
     const response = await fetch('/api/customers');
     const body = await response.json();
 
@@ -66,12 +79,13 @@ class App extends React.Component
 
   progress = () =>
   {
+    if(this.state.customers) clearInterval(this.timer);
     const { complated } = this.state;
     this.setState({ complated: complated >= 100 ? 0 : complated + 1});
+   // console.log(this.state.customer);
   }
 
   render() {
-
     const { classes } = this.props;
     return (
       <div>
@@ -85,10 +99,12 @@ class App extends React.Component
                 <TableCell>생일</TableCell>
                 <TableCell>성별</TableCell>
                 <TableCell>직업</TableCell>
+                <TableCell>설정</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-            {this.state.customers ? this.state.customers.map(c => 
+            {
+            this.state.customers ? this.state.customers.map(c => 
             {
             return ( 
               <Customer
@@ -99,6 +115,7 @@ class App extends React.Component
                 birthday={c.birthday}
                 gender={c.gender}
                 job={c.job}
+                stateRefresh={this.stateRefresh}
               />
             )
           }) :
