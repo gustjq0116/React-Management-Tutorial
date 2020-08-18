@@ -44,9 +44,12 @@ app.post('/api/customers', upload.single('image'), (req, res) =>
     let sql = 'INSERT INTO customer VALUES (null, ?, null, ?, ?, ?, ?, now(), 0)';
     
     let image='';
-    if(image) image = req.file.filename;
-    //req.file ?  image = '/image/' + req.file.filename : ''
-   // console.log(image);
+    
+
+   //if(req.file) image = req.file.filename;
+
+    req.file ?  image = '/image/' + req.file.filename : ''
+    //console.log(image);
     let name =req.body.name;
     let birthday =req.body.birthday;
     let gender =req.body.gender;
@@ -57,9 +60,11 @@ app.post('/api/customers', upload.single('image'), (req, res) =>
         (err, rows, fields) => 
         {
             res.send(rows);
-           // console.log(err);
+            //console.log(err);
+            //res.send();
         }
     )
+    //res.send();
     
 })
 

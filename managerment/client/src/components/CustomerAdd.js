@@ -55,7 +55,7 @@ class CustomerAdd extends React.Component
         this.addCustomer()
             .then((res) =>
             {
-                console.log(res.data);
+                //console.log(res.data);
                 this.props.stateRefresh();
             })
         this.setState({
@@ -84,6 +84,7 @@ class CustomerAdd extends React.Component
     }
     addCustomer = () =>
     {
+       // console.log(this.state.file);
         const url = '/api/customers';
         const formData = new FormData();
         formData.append('image', this.state.file);
